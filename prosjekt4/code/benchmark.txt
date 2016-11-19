@@ -1,0 +1,42 @@
+benchmarks, task D, variance values for T = 1
+
+
+
+joseph@bf:~/Documents/joseph/Computer_Science/gitdir/prosjektoppgaver-fys3150/prosjekt4/code$ ./loop2 
+
+
+	Numeric sigmaE 0.0144881 #variance of temp = 1
+
+	Numeric Energy squared = 4.67149
+	Numeric Energy = -2.1580077699223
+	Numeric Expected Absolute Magnetization = 0.0853255967440326
+	Cycles = 100000
+
+
+benchmarks, task D, variance values for T = 2.4
+
+joseph@bf:~/Documents/joseph/Computer_Science/gitdir/prosjektoppgaver-fys3150/prosjekt4/code$ ./loop2 
+
+	Numeric sigmaE  0.0164587
+
+	Numeric Energy squared = 3.91861
+	Numeric Energy = -1.97538549614504
+	Numeric Expected Absolute Magnetization = 0.0825890241097589
+	Cycles = 100000
+
+
+
+#######Parallelization runs
+L=2 - MCC =4* 10**7
+L=20 - MCC =4* 10**5
+L=40 - MCC =4* 10**5
+L=60 - MCC =4* 10**5 / 2 (50 000 * 4)
+L=100 - MCC = 15000
+L=140 - MCC = 7500
+
+
+Numeric Energy squared = 4.01643336482823
+Numeric Energy = -2.00387011532565
+Numeric Expected Absolute Magnetization = 0.0164502099860009
+Cycles = 15000
+
