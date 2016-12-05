@@ -5,6 +5,7 @@ using namespace std;
 #include <iomanip>
 #include <armadillo>
 #include <string>
+#include <sstream>
 using namespace arma;
 fstream outfile;
 
@@ -20,10 +21,12 @@ int main(int argc, char *argv[]){
 		cout << "You're gonna have to give me some command line arguments man" << endl;
 		cout << "After the file name, write a number representing the 10 exponent for transactions."<< endl;
 		cout << "Second CMD argument is gonna be lambda, the saving factor. Any number between 0 and 1 will do." << endl;
-		cout << "Lastly, write another number between 0 and 1 representing Alpha, no Idea what it does." << endl;
+		cout << "Lastly, write another number between 0 and infinity representing Alpha, no Idea what it does." << endl;
 		return 0;
 		}
-
+    stringstream s1;
+    stringstream s2;
+    stringstream s3;
 	int exponent;
 	exponent = atoi(argv[1]); //The exponent gathered from the CMD decides
 							  //- how many transactions we simulate (10^exponent)
@@ -31,16 +34,15 @@ int main(int argc, char *argv[]){
 	lambda = atof(argv[2]); //The saving coefficient decides how rapid the cash disperses
 
 	double alpha;
-	lambda = atof(argv[3]); //alpha
-
-
+	alpha = atof(argv[3]); //alpha
 
 	srand(2);
 	int Number_of_agents = 500;  //Number of cash traders (agents)
-	double m0 = 10; 				 //Start up cash for each agent	
-
-
-	string filename = "exp"+to_string(exponent)+"lambda"+to_string(lambda)+"alpha"+to_string(alpha);
+	double m0 = 1; 				 //Start up cash for each agent	
+	s1 << exponent;
+	s2 << lambda;
+	s3 << alpha;
+	string filename = "exp"+s1.str()+"lambda"+s2.str()+"alpha"+s3.str();
 	outfile.open(filename,ios::out);
 
 	for(int cycle = 0; cycle <1000; cycle ++){
@@ -48,8 +50,7 @@ int main(int argc, char *argv[]){
 		deal(agents,Number_of_agents,m0); //function gives each agent his starup moeny
 	
 		transactions(agents,exponent,Number_of_agents,lambda,alpha);	  //function where all transactions take place
-		//write(agents, Number_of_agents,filename);				//write data to file
-
+		write(agents, Number_of_agents,filename);				//write data to file
 	}	
 
 	
@@ -74,35 +75,23 @@ void transactions(vec& M,double exp,int Number_of_agents, double lambda,double a
 	int counter=0;
 	int I;
 	int J;
-	double randmax_inv = 1./RAND_MAX
-	while (counter <pow(10,exp)){		//breaks after 10^exp transactions
+	int EXP =pow(10,exp);
+	double randmax_inv = 1./RAND_MAX;
+	while (counter < EXP){		//breaks after 10^exp transactions
 		I = rand()%Number_of_agents;
 		J = rand()%Number_of_agents;
 		if (I-J){
-			double r = rand()*randmax_inv;
-			if ((M(I)-M(J)) > 0){
-				if ( pow(1./(M(I)-M(J),-alpha) > r) 
-				counter +=1;		//counts number of transactions
+			double r = rand()*randmax_inv*10;
+			double p = pow(M(I)-M(J),-alpha);
+			if ( p*p > r*r){
+				counter += 1;		//counts number of transactions
 				eps = rand()*randmax_inv;
 				md = (1.-lambda)*(eps*M(J)-(1.-eps)*M(I));
 				M(I) = M(I)+md;
 				M(J) = M(J)-md;
-				}
-			else{
-				if ( pow(1./(M(J)-M(I),-alpha) > r) 
-				counter +=1;		//counts number of transactions
-				eps = rand()*randmax_inv;
-				md = (1.-lambda)*(eps*M(J)-(1.-eps)*M(I));
-				M(I) = M(I)+md;
-				M(J) = M(J)-md;
-				}
-		
 			}
-			
-
 		}
-		
-	}
+	}//while loops ends
 }
 
 

@@ -15,6 +15,13 @@ void write(vec& M,int N,string filename);
 void variance(int Number_of_agents,double exponent,double m0,double lambda);
 
 int main(int argc, char *argv[]){
+	cout << argc << endl;
+		if (argc < 3){
+		cout << "You're gonna have to give me some command line arguments man" << endl;
+		cout << "After the file name, write a number representing the 10 exponent for transactions."<< endl;
+		cout << "Second CMD argument is gonna be lambda, the saving factor. Any number between 0 and 1 will do." << endl;
+		return 0;
+	}
 	int exponent;
 	exponent = atoi(argv[1]); //The exponent gathered from the CMD decides
 							  //- how many transactions we simulate (10^exponent)
@@ -24,10 +31,22 @@ int main(int argc, char *argv[]){
 	int Number_of_agents = 500;  //Number of cash traders (agents)
 	double m0 = 10; 				 //Start up cash for each agent	
 
+    stringstream s1;
+    stringstream s2;
 
-	string filename = "exp"+to_string(exponent)+"lambda"+to_string(lambda);
+	int exponent;
+	exponent = atoi(argv[1]); //The exponent gathered from the CMD decides
+							  //- how many transactions we simulate (10^exponent)
+	double lambda;
+	lambda = atof(argv[2]); //The saving coefficient decides how rapid the cash disperses
+	srand(2);
+	int Number_of_agents = 500;  //Number of cash traders (agents)
+	double m0 = 10; 				 //Start up cash for each agent	
+	s1 << exponent;
+	s2 << lambda;
+
+	string filename = "exp"+s1.str()+"lambda"+s2.str();
 	outfile.open(filename,ios::out);
-
 	for(int cycle = 0; cycle <1000; cycle ++){
 		vec agents;  //Agents' money in a vector
 		deal(agents,Number_of_agents,m0); //function gives each agent his starup moeny

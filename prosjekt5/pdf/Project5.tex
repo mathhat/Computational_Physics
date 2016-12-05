@@ -1,0 +1,175 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage{parskip}
+\usepackage[]{graphicx}
+\usepackage[]{hyperref}
+\usepackage{listings}
+\usepackage{color}
+ \usepackage{relsize,setspace,amsmath,amsfonts,amssymb}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle,language = C++}
+\usepackage[utf8]{inputenc}
+
+%\lstset{
+% 	frame = single,
+% 	language = C++,
+% 	showstringspaces = false,
+% 	tabsize = 2,
+% 	otherkeywords = {self},
+% 	keywordstyle = \color{blue},
+% 	identifierstyle=\color{deepgreen},
+% 	stringstyle=\color{orange},
+% 	backgroundcolor=\color{mygray}
+%}
+
+\title{Model of the Stock Market \\
+  \hrulefill\small{ Fys3150 }\hrulefill}
+  
+\author{Fredrik Østrem \\  \href{https://github.com/frxstrem/fys3150/tree/master/project5}{\texttt{github.com/frxstrem}}
+ \and Joseph Knutson \\ \href{https://github.com/mathhat/Computational_Physics/tree/master/prosjekt5}{\texttt{github.com/mathhat}}}
+  
+\begin{document}
+
+\begin{titlepage}
+\maketitle
+\begin{abstract}
+
+\end{abstract}
+
+\tableofcontents
+\end{titlepage}
+\section{Introduction}
+The aim of this project is to simulate transactions of money between financial
+agents, people, using Monte Carlo methods. The final goal is to extract a distribution of
+income as function of the income m. From Pareto’s work \href{http://www.institutcoppet.org/2012/05/08/cours-deconomie-politique-1896-de-vilfredo-pareto}{\texttt{(V. Pareto, 1897)}}, 
+and from empirical studies, it is known that the higher end of the distribution of money, rich end, follows a power distribution.
+$$\omega_{m} = m^{-1-\alpha} $$
+with $\alpha\in [1,2]$. We will follow the analysis made by \href{{http://www.sciencedirect.com/science/article/pii/S0378437104004327}}{Patriarca and collaborators}. 
+
+We assume we have $N$ agents that exchange money in pairs $(i,j)$. We assume also that all agents
+start with the same amount of money $m_0 > 0$. At a given 'time step', we choose a pair
+of agents $(i,j)$ and let a transaction take place. This means that agent $i$'s money $m_i$ changes
+to $m_i'$ and similarly we have $m_j\rightarrow m_j'$. 
+Money is conserved during a transaction:
+
+\begin{equation}
+  m_i+m_j=m_i'+m_j'.
+  \label{eq:conserve}
+\end{equation}
+In order to decide which agent gets what, we draw a random number $\epsilon$. 
+The change is done via a random reassignement (a random number) $\epsilon$, meaning that
+
+\begin{equation}
+m_i' = \epsilon(m_i+m_j),\label{eq:eps1}
+\end{equation}
+leading to
+
+\begin{equation}
+m_j'= (1-\epsilon)(m_i+m_j).\label{eq:eps2}
+\end{equation}
+The number $\epsilon$ is extracted from a uniform distribution.
+In this simple model, no agents are left with a debt, that is $m\ge 0$.
+Due to the conservation law above, one can show that the system relaxes toward an equilibrium
+state given by a Gibbs distribution
+
+\begin{equation*}
+w_m=\beta \exp{(-\beta m)},
+\end{equation*}
+with
+
+\begin{equation*}
+\beta = \frac{1}{\langle m\rangle},
+\end{equation*}
+and $\langle m\rangle=\sum_i m_i/N=m_0$, the average money.
+It means that after equilibrium has been reached that the majority of agents is left with a small
+number of money, while the number of richest agents, those with $m$ larger than a specific value $m'$,
+exponentially decreases with $m'$.
+
+In each simulation, we need a sufficiently large number of transactions, say $10^7$. Our aim is find the final equilibrium distribution $w_m$. In order to do that we would need
+several runs of the above simulations, at least $10^3-10^4$ runs (experiments).
+\section{Theory}
+Now there are multiple models to explore. Our first model picks two entirely random agents, i and j, and makes them trade a random amount decided my the factor $\epsilon$ (see equation \ref{eq:eps1} and \ref{eq:eps2}).
+The next three models add one more realistic aspect each.
+\subsection{Saving factor $\lambda$}
+As our model is now, nothing is stopping our agents from throwing away all their money. In order to make our agents a bit more rational, we will limit the amount of money they trade away.
+The conservation law of Eq. (\ref{eq:conserve}) holds, but the money to be shared in a transaction between
+  agent $i$ and agent $j$ is now $(1-\lambda)(m_i+m_j)$. This means that we have
+\begin{equation}
+  m_i' = \lambda m_i+\epsilon(1-\lambda)(m_i+m_j),
+  \end{equation}
+  and
+
+\begin{equation}
+  m_j' = \lambda m_j+(1-\epsilon)(1-\lambda)(m_i+m_j),
+  \end{equation}
+  which can be written as
+
+\begin{equation}
+  m_i'=m_i+\delta m
+  \end{equation}
+  and
+
+\begin{equation}
+  m_j'=m_j-\delta m,
+  \end{equation}
+  with
+
+\begin{equation}\label{eq:save}
+  \delta m=(1-\lambda)(\epsilon m_j-(1-\epsilon)m_i),
+\end{equation}
+From Eq.(\ref{eq:save}), if $\lambda = 0.8$, our agents will never trade more than 20\% of their total money. 
+This simple implementation has 
+\section{The Factors}
+
+\section{Structure of Code}
+\section{Method}
+
+
+\begin{thebibliography}{9}
+
+\bibitem{itemname}
+	navn,
+	\emph{Hvor det er fra},
+	University of Oslo,
+	2016.
+	
+\bibitem{itename2}
+	Navn,
+	subtitle,
+	\emph{title},
+	Grøndahl \& Søn, pp. 28-33,
+	1881.
+
+\end{thebibliography}
+
+\begin{appendix}
+\section{stuff}
+\label{app1}
+Explainexplain
+
+\end{appendix}
+
+\end{document}
