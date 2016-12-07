@@ -2,42 +2,24 @@
 from matplotlib.pyplot import *
 from numpy import *
 from math import factorial
-filename = "exp6lambda0.500000alpha0.000000"
-file = open(filename,"r")
-lamb = float(filename[10:14])
+def PLOT(filename,alpha):
+	file = open(filename,"r")
+	#lamb = float(filename[10:13])
+	lamb = float(filename[10:11])
+	alpha = str(alpha)
+	money=[]
+	for line in file:
+		money.append(float(line))
+	money =asarray(money)
+	N = len(money)
+	bins = arange(0,1000,0.01)#float(400*float(alpha)**2)
+	y,x = histogram(money,bins = bins)
+	Y = y/float(sum(y))
+	loglog(x[0:-1],Y,label=alpha)
 
-money=[]
-for line in file:
-	money.append(float(line))
-money =asarray(money)
-N = len(money)
-mac = max(money)
 
-bins = 600
-hist(money,bins = bins)
+
+for i in [0.5,1,1.5,2]:
+	PLOT("exp7lambda0alpha%s"%str(i),i)
+legend()
 show()
-
-
-
-
-
-y,x = histogram(money,bins = bins)
-Y = y/float(sum(y))
-plot(x[0:-1],Y)
-
-#### Gibbs dist through gamma functions
-x = x#linspace(0,140,bins)
-def n(lamb):
-	return 1.+ 3.*lamb/(1.-lamb)
-def P(n,x):
-	return n**n/factorial(n-1)*(0.1*x)**(n-1)*exp(-n*0.1*x)
-p = P(n(lamb),x)
-plot(x,p/float(sum(p)))
-show()
-####
-
-plot(x,log(0.1*exp(-x*0.1)),label="omg")
-
-#legend()
-show()
-

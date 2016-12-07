@@ -110,22 +110,17 @@ exponentially decreases with $m'$.
 
 In each simulation, we need a sufficiently large number of transactions, say $10^7$. Our aim is find the final equilibrium distribution $w_m$. In order to do that we would need
 several runs of the above simulations, at least $10^3-10^4$ runs (experiments).
-\section{Theory}
-Now there are multiple models to explore. Our first model picks two entirely random agents, i and j, and makes them trade a random amount decided my the factor $\epsilon$ (see equation \ref{eq:eps1} and \ref{eq:eps2}).
-The next three models add one more realistic aspect each.
-\subsection{Saving factor $\lambda$}
-As our model is now, nothing is stopping our agents from throwing away all their money. In order to make our agents a bit more rational, we will limit the amount of money they trade away.
-The conservation law of Eq. (\ref{eq:conserve}) holds, but the money to be shared in a transaction between
-  agent $i$ and agent $j$ is now $(1-\lambda)(m_i+m_j)$. This means that we have
-\begin{equation}
-  m_i' = \lambda m_i+\epsilon(1-\lambda)(m_i+m_j),
-  \end{equation}
-  and
+\section{Theory of Models}
+Now there are multiple models to explore. Our first model picks two entirely random agents, i and j, and makes them trade a random amount decided by the factor $\epsilon$ (see equation \ref{eq:eps1} and \ref{eq:eps2}).
+The following three models each add another parameter to the previous resulting in more realistic distributions of money.
+\subsection{2nd Model) The Saving Factor $\lambda$}
+In our simplest model, nothing is stopping our agents from throwing away all their money. In order to make our agents a bit more rational, we will limit the amount of money they trade away.
 
-\begin{equation}
-  m_j' = \lambda m_j+(1-\epsilon)(1-\lambda)(m_i+m_j),
-  \end{equation}
-  which can be written as
+
+The conservation law of Eq. (\ref{eq:conserve}) holds, but the money to be shared in a transaction between
+agent $i$ and agent $j$ is now $(1-\lambda)(m_i+m_j)$. This means that the amount of money our previous model would transfer is reduced by $\lambda$\%
+
+which can be written as
 
 \begin{equation}
   m_i'=m_i+\delta m
@@ -141,12 +136,45 @@ The conservation law of Eq. (\ref{eq:conserve}) holds, but the money to be share
   \delta m=(1-\lambda)(\epsilon m_j-(1-\epsilon)m_i),
 \end{equation}
 From Eq.(\ref{eq:save}), if $\lambda = 0.8$, our agents will never trade more than 20\% of their total money. 
-This simple implementation has 
-\section{The Factors}
+As $\lambda$ goes to 1, our agents only engage in microtransactions. This reduces risk and you will soon see how helpful $\lambda$ can be for the reduction of poverty.
 
-\section{Structure of Code}
-\section{Method}
+\subsection{3rd model) The Preferential Factor $\alpha$}
+Our next model is the same as the last, except our agents will not only have risk reduction through $\lambda$, but also a preferred trading partner through $\alpha$.
+How our agents will come to prefer each other will be based on how equal they are economically. 
+\begin{equation}\label{eq:alpha}
+ P(i,j;\alpha) \propto \left|m(i)-m(j) \right|^{-\alpha}
+\end{equation}
+We use the expression in Eq.(\ref{eq:alpha}) to produce a probability for agent $i$ and $j$'s transaction. We can't know what the proportionality constant is without
+calculating the probability of every pair of agents (which is costly). Instead we generate a random number $r$ between $0$ and $S$, such that $S$ is larger than the probability expression
+some large fraction of the time. We discard a transaction between pair of agents if $r$ is less than the probability expression in \eqref{eq:alpha}.
+If $S$ is too small, any pair where the probability expression in \eqref{eq:alpha} is larger than $S$ will always be accepted, causing a less accurate distribution, while if $S$ is too large, too
+many pairs of agents will be discarded, so computation time will take longer.
 
+\subsection{4th model) Memory Factor $\gamma$} 
+This time, we're adding another parameter to the way the agent's prefer trading with each other.
+In real life, people build trust with those they've traded with before. We're going to make the agent's remember each other. The goal is to make them prefer those they've traded with before.
+The more trades that a pair has comitted in past, the more likely it is for that pair to trade again in the future.
+
+The new probability expression will contain a new factor:
+\begin{equation}
+ P(i,j;\alpha,\gamma) \propto \left|m(i)-m(j) \right|^{-\alpha}(C_{ij} + 1)^{\gamma}
+\end{equation}
+$C$ is a matrix which stores the amount of times that agent $i$ and $j$ have traded.
+This means that each time agent $i$ and $j$ trades, $C_{ij}$ grows with 1.
+
+We see that for $\gamma = 0$, the probability of a transaction is the same as before, but for
+$\gamma > 0$ the probability of trade increases.
+
+\section{Methods}
+
+To model the trades between our agents, we use random sampling, otherwise known as Monte Carlo methods.
+\subsection{Monte Carlo}
+We have both used different random number generators. Fredrik used a c++11 RNG and I used rand(), a function from C.
+With these we were able to draw pairs of random agents, produce probabilities and compare our agents' money and history to determine if a 
+pair should trade.
+\subsection{A Metropolis Algorithm}
+The last two models are the only models where the agents gain preferences of who to trade with. For this, we added two probability expressions with relatively low acceptance ratios.
+If a random number between $0$ and $S$ was lower than the probability expression produced by the random pair, then the transaction was allowed.
 
 \begin{thebibliography}{9}
 
@@ -156,13 +184,6 @@ This simple implementation has
 	University of Oslo,
 	2016.
 	
-\bibitem{itename2}
-	Navn,
-	subtitle,
-	\emph{title},
-	Grøndahl \& Søn, pp. 28-33,
-	1881.
-
 \end{thebibliography}
 
 \begin{appendix}
