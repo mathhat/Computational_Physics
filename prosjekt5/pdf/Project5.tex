@@ -109,7 +109,7 @@ number of money, while the number of richest agents, those with $m$ larger than 
 exponentially decreases with $m'$.
 
 In each simulation, we need a sufficiently large number of transactions, say $10^7$. Our aim is find the final equilibrium distribution $w_m$. In order to do that we would need
-several runs of the above simulations, at least $10^3-10^4$ runs (experiments).
+several runs of the above simulations, at least $10^3-10^4$ runs (cycles).
 \section{Theory of Models}
 Now there are multiple models to explore. Our first model picks two entirely random agents, i and j, and makes them trade a random amount decided by the factor $\epsilon$ (see equation \ref{eq:eps1} and \ref{eq:eps2}).
 The following three models each add another parameter to the previous resulting in more realistic distributions of money.
@@ -167,10 +167,11 @@ $\gamma > 0$ the probability of trade increases.
 
 \section{Methods}
 
-To model the trades between our agents, we use random sampling, otherwise known as Monte Carlo methods.
+To model the trades between our agents, we use random sampling, the essence of Monte Carlo methods.
 \subsection{Monte Carlo}
-We have both used different random number generators. Fredrik used a c++11 RNG and I used rand(), a function from C.
-With these we were able to draw pairs of random agents, produce probabilities and compare our agents' money and history to determine if a 
+All our simulations run 10 million transactions over 1 thousand cycles. Each of the $10^3 \times 10^7$ transactions consist of drawing two random numbers, $i$ and $j$, representing two agents.
+We have both used different random number generators to do this. Fredrik used a c++11 RNG. Joseph simply used rand(), a function from the predecessing languange, \emph{C}.
+Following agents, produce probabilities and compare our agents' money and history to determine if a 
 pair should trade.
 \subsection{A Metropolis Algorithm}
 The last two models are the only models where the agents gain preferences of who to trade with. For this, we added two probability expressions with relatively low acceptance ratios.
